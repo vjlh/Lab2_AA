@@ -150,6 +150,23 @@ int agregarNodo(struct nodo *nodoActual, int valor,int beneficio,int indice){
 	return x + y;
 }
 
+void escribirArchivo(){
+	FILE *archivo_salida;
+	archivo_salida = fopen("salida.out","w");
+	fprintf(archivo_salida,"%i %i\n",CAPITAL_MAX,BENEFICIO_MAX);
+
+   	char *ptr;
+
+   	ptr = strtok(CAMINO_FINAL, "-");    // Primera llamada => Primer token
+		fprintf(archivo_salida,"%d\n",listaDatos[atoi(ptr)].inversion);
+ 	
+ 	while((ptr = strtok(NULL,"-")) != NULL)    // Posteriores llamadas
+		fprintf(archivo_salida,"%d\n",listaDatos[atoi(ptr)].inversion);
+
+	fclose(archivo_salida);
+	printf("\nEl programa ha terminado...\n");
+}
+
 int main(){
 	recibirNombreArchivo();
 	leerArchivosYGuardarDatos();
@@ -160,6 +177,8 @@ int main(){
 
 	for (int i = 0; i < NUMERO_INVERSIONES; ++i)
 		agregarNodo(raiz,listaDatos[i].inversion,listaDatos[i].beneficio,i);
+
+	escribirArchivo();
 	
 	printf("El beneficio maximo es: %d\nEl capital utilizado es: %d\nCamino de: %s\n",BENEFICIO_MAX,CAPITAL_MAX,CAMINO_FINAL);
 
