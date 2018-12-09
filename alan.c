@@ -24,10 +24,14 @@ int BENEFICIO_MAX;
 int NUMERO_INVERSIONES;
 int CAPITAL_INVERTIDO;
 char *NOMBRE_ARCHIVO;
+char *CAMINO_FINAL;
 Datos *listaDatos;
 
-struct nodo *crearNodo(int valor, int num,int beneficio){
+struct nodo *crearNodo(int valor, int num,int beneficio,char *camino){
 	struct nodo *nuevo = (struct nodo *)calloc(1,sizeof(struct nodo));
+	nuevo->camino = (char*)calloc(100,sizeof(char));
+	strcpy(nuevo->camino,camino);
+	strcat(nuevo->camino,"-");
 	nuevo->num = num;
 	nuevo->valorAcumulado = valor;
 	nuevo->beneficioAcumulado = beneficio;
@@ -44,12 +48,26 @@ int agregarNodo(struct nodo *nodoActual, int valor,int beneficio){
 	}
 	if(nodoActual->izquierdo == NULL && nodoActual->derecho == NULL){
 		int valorAcumulado = nodoActual->valorAcumulado + valor;
-		if (valorAcumulado<= VALORLIMITE)
+		if (valorAcumulado <= VALORLIMITE)
 		{
-			printf("NODO: %i\n",valor);
-			int beneficioAcumulado = nodoActual->beneficioAcumulado + beneficio;
-			nodoActual->izquierdo = crearNodo(0,0,0);
-			nodoActual->derecho = crearNodo(valorAcumulado,valor,beneficio);
+			char *inversion,*caminoAcumulado;
+			int beneficioAcumulado;
+
+			beneficioAcumulado = nodoActual->beneficioAcumulado + beneficio;
+			inversion = (char*)calloc(10,sizeof(char));
+			caminoAcumulado = (char*)calloc(100,sizeof(char));
+			
+			sprintf(inversion, "%i", valor);			
+			strcpy(caminoAcumulado,nodoActual->camino);
+			strcat(caminoAcumulado,inversion);
+
+			if(beneficioAcumulado>BENEFICIO_MAX)
+			{
+				BENEFICIO_MAX = beneficioAcumulado;
+				strcpy(CAMINO_FINAL,caminoAcumulado);
+			}
+			nodoActual->izquierdo = crearNodo(0,0,0,"");
+			nodoActual->derecho = crearNodo(valorAcumulado,valor,beneficioAcumulado,caminoAcumulado);
 				
 		}
 		return 2;
@@ -80,18 +98,18 @@ void structure (struct nodo *root, int level ){
 }
 
 int main(){
-	//recibirNombreArchivo();
-	//leerArchivosYGuardarDatos();
-	char* result;
-	int p = 15;
-	sprintf(result, "%i", p);
-	printf("El numero en string es %s\n",result);
-	struct nodo *raiz = crearNodo(0,0,0);
+	recibirNombreArchivo();
+	leerArchivosYGuardarDatos();
+	struct nodo *raiz = crearNodo(0,0,0,"");
 	VALORLIMITE = 40;
-
+	BENEFICIO_MAX = 0;
+	CAMINO_FINAL = (char*)calloc(100,sizeof(char));
 	printf("Nodos agregados %d\n",agregarNodo(raiz,40,7));
 	printf("Nodos agregados %d\n",agregarNodo(raiz,25,6));
 	printf("Nodos agregados %d\n",agregarNodo(raiz,15,8));
 	structure(raiz,0);
+
+	printf("El beneficio maximo es: %d con un camino de: %s\n",BENEFICIO_MAX,CAMINO_FINAL);
+
 	return 0;
 }
