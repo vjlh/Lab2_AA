@@ -1,0 +1,8 @@
+Para compilar el programa:
+$ gcc principal.c funciones.c -o programa
+
+para ejecutar el programa:
+$ ./programa
+
+Y para entrar al modo DEBUG del programa:
+$ gcc principal.c funciones.c -DDEBUG  -o programa
